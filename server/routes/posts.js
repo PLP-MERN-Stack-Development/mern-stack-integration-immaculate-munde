@@ -14,15 +14,23 @@ const {
 // Import authentication middleware (optional for protected routes)
 const { protect } = require('../middleware/authMiddleware');
 
+// Import validation middleware
+const {
+  validatePost,
+  validatePostUpdate,
+  validateComment,
+  validateObjectId,
+} = require('../middleware/validators');
+
 // Public routes
 router.get('/', getAllPosts);
 router.get('/search', searchPosts);
 router.get('/:idOrSlug', getPost);
 
 // Protected routes (require login)
-router.post('/', protect, createPost);
-router.put('/:id', protect, updatePost);
-router.delete('/:id', protect, deletePost);
-router.post('/:id/comments', protect, addComment);
+router.post('/', protect, validatePost, createPost);
+router.put('/:id', protect, validateObjectId, validatePostUpdate, updatePost);
+router.delete('/:id', protect, validateObjectId, deletePost);
+router.post('/:id/comments', protect, validateObjectId, validateComment, addComment);
 
 module.exports = router;

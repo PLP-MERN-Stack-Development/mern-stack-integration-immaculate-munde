@@ -35,6 +35,9 @@ const postRoutes = require('./routes/posts');
 const categoryRoutes = require('./routes/categories');
 const authRoutes = require('./routes/auth');
 
+// Import error handling middleware
+const { errorHandler, notFound } = require('./middleware/errorHandler');
+
 // Use routes
 app.use('/api/posts', postRoutes);
 app.use('/api/categories', categoryRoutes);
@@ -45,14 +48,11 @@ app.get('/', (req, res) => {
   res.send('✅ MERN Blog API is running...');
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error('🔥 Error:', err.stack);
-  res.status(err.statusCode || 500).json({
-    success: false,
-    message: err.message || 'Server Error',
-  });
-});
+// 404 handler (must be after all routes)
+app.use(notFound);
+
+// Error handler (must be last)
+app.use(errorHandler);
 
 // MongoDB Connection
 const connectDB = async () => {

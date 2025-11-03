@@ -1,0 +1,172 @@
+### Blog API Test File
+### Use with REST Client extension in VS Code
+
+@baseUrl = http://localhost:5000/api
+@token = YOUR_JWT_TOKEN_HERE
+
+### ============================================
+### CATEGORIES
+### ============================================
+
+### Get all categories
+GET {{baseUrl}}/categories
+
+### Create a new category
+POST {{baseUrl}}/categories
+Content-Type: application/json
+
+{
+  "name": "Technology",
+  "description": "Posts about technology and programming"
+}
+
+### Create another category
+POST {{baseUrl}}/categories
+Content-Type: application/json
+
+{
+  "name": "Lifestyle",
+  "description": "Posts about lifestyle and wellness"
+}
+
+### Test validation - Missing name
+POST {{baseUrl}}/categories
+Content-Type: application/json
+
+{
+  "description": "This should fail"
+}
+
+### Test validation - Name too short
+POST {{baseUrl}}/categories
+Content-Type: application/json
+
+{
+  "name": "A"
+}
+
+### ============================================
+### POSTS
+### ============================================
+
+### Get all posts
+GET {{baseUrl}}/posts
+
+### Get posts with pagination
+GET {{baseUrl}}/posts?page=1&limit=5
+
+### Get posts by category
+GET {{baseUrl}}/posts?category=Technology
+
+### Get a single post by ID
+GET {{baseUrl}}/posts/60d5ec49f1b2c8b1f8e4e1a1
+
+### Search posts
+GET {{baseUrl}}/posts/search?q=javascript
+
+### Create a new post (requires authentication)
+POST {{baseUrl}}/posts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Getting Started with Node.js",
+  "content": "Node.js is a powerful JavaScript runtime built on Chrome's V8 engine. In this post, we'll explore the basics of Node.js and how to get started with building server-side applications.",
+  "category": "60d5ec49f1b2c8b1f8e4e1a1",
+  "excerpt": "Learn the basics of Node.js",
+  "tags": ["nodejs", "javascript", "backend"],
+  "featuredImage": "https://example.com/nodejs.jpg",
+  "isPublished": true
+}
+
+### Test validation - Missing required fields
+POST {{baseUrl}}/posts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Test"
+}
+
+### Test validation - Title too short
+POST {{baseUrl}}/posts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Hi",
+  "content": "This is content",
+  "category": "60d5ec49f1b2c8b1f8e4e1a1"
+}
+
+### Test validation - Invalid category ID
+POST {{baseUrl}}/posts
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Valid Title",
+  "content": "This is valid content",
+  "category": "invalid-id"
+}
+
+### Update a post (requires authentication)
+PUT {{baseUrl}}/posts/60d5ec49f1b2c8b1f8e4e1a1
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated: Getting Started with Node.js",
+  "isPublished": true
+}
+
+### Test validation - Invalid ObjectId
+PUT {{baseUrl}}/posts/invalid-id
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "title": "Updated Title"
+}
+
+### Delete a post (requires authentication)
+DELETE {{baseUrl}}/posts/60d5ec49f1b2c8b1f8e4e1a1
+Authorization: Bearer {{token}}
+
+### Add comment to a post (requires authentication)
+POST {{baseUrl}}/posts/60d5ec49f1b2c8b1f8e4e1a1/comments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "content": "Great post! Very informative."
+}
+
+### Test validation - Empty comment
+POST {{baseUrl}}/posts/60d5ec49f1b2c8b1f8e4e1a1/comments
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "content": ""
+}
+
+### ============================================
+### ERROR TESTING
+### ============================================
+
+### Test 404 - Non-existent route
+GET {{baseUrl}}/nonexistent
+
+### Test 404 - Non-existent post
+GET {{baseUrl}}/posts/60d5ec49f1b2c8b1f8e4e999
+
+### Test 401 - No token
+POST {{baseUrl}}/posts
+Content-Type: application/json
+
+{
+  "title": "Test Post",
+  "content": "This should fail without token",
+  "category": "60d5ec49f1b2c8b1f8e4e1a1"
+}
